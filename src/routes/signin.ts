@@ -1,9 +1,26 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+import { body, validationResult } from 'express-validator';
+import { RequestValidationError } from '../errors';
 
 const router = express.Router()
 
-router.get('/api/users/signin', (req, res) => {
-    res.send("hello from signin route")
-})
+router.post('/api/users/signin',
+    [
+        body('email')
+            .isEmail()
+            .withMessage('Email must be valid'),
+        body('password')
+            .trim()
+            .notEmpty()
+            .withMessage('You must supply a password')
+    ], (req: Request, res: Response) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            throw new RequestValidationError(errors.array());
+        }
+
+        res.send("hello from signin route");
+    })
 
 export { router as signInRouter }

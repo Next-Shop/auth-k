@@ -13,9 +13,18 @@ import { signOutRouter } from './routes/signout';
 import { currentUserRouter } from './routes/current-user';
 import { errorHandler } from './middlewares/error-handler';
 import { NotFoundError } from './errors/not-found-error';
+import cookieSession from 'cookie-session';
 
 const app = express();
+// tell node.js that you are behind the proxy of ingress-nginx so trust the security of the incoming traffic
+app.set('trust proxy', true);
 app.use(json());
+app.use(
+    cookieSession({
+        signed: false,
+        secure: true
+    })
+)
 
 app.use(signInRouter);
 app.use(signupRouter);
@@ -28,7 +37,12 @@ app.get('*', async () => {
 
 app.use(errorHandler);
 
-const connectDB = async () => {
+const start = async () => {
+
+    if (!process.env.JWT_KEY) {
+        throw new Error('JWT_KEY must be defined');
+    }
+
     try {
         await mongoose.connect('mongodb://auth-mongo-srv:27017/auth', {
             useNewUrlParser: true,
@@ -45,4 +59,4 @@ app.listen(3000, () => {
     console.log(`Listening on port 3000!`);
 });
 
-connectDB();
+start();

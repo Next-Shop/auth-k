@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import { RequestValidationError } from '../errors';
 import { BadRequestError } from '../errors/bad-request-error';
@@ -26,6 +27,15 @@ router.post('/api/users/signup', [
     const user = User.createUser({ email, password });
 
     await user.save()
+
+    // Generate JWT
+    const userJwt = jwt.sign({
+        id: user.id,
+        email: user.email
+    }, process.env.JWT_KEY!);
+
+    // Store on the session object
+    req.session = { jwt: userJwt };
 
     res.status(201).send(user);
 })

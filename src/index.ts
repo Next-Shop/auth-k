@@ -5,15 +5,16 @@ import { json } from 'body-parser';
 //3rd party
 import 'express-async-errors';
 import mongoose from 'mongoose';
+import cookieSession from 'cookie-session';
 
 // own
-import { signInRouter } from './routes/signin';
+import { signinRouter } from './routes/signin';
 import { signupRouter } from './routes/signup';
-import { signOutRouter } from './routes/signout';
+import { signoutRouter } from './routes/signout';
 import { currentUserRouter } from './routes/current-user';
+
 import { errorHandler } from './middlewares/error-handler';
 import { NotFoundError } from './errors/not-found-error';
-import cookieSession from 'cookie-session';
 
 const app = express();
 // tell node.js that you are behind the proxy of ingress-nginx so trust the security of the incoming traffic
@@ -26,9 +27,9 @@ app.use(
     })
 )
 
-app.use(signInRouter);
+app.use(signinRouter);
 app.use(signupRouter);
-app.use(signOutRouter);
+app.use(signoutRouter);
 app.use(currentUserRouter);
 
 app.get('*', async () => {

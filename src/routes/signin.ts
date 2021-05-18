@@ -51,4 +51,4 @@ router.post('/api/users/signin',
         res.status(200).send(existingUser);
     })
 
-export { router as signInRouter }
+export { router as signinRouter }

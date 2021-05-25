@@ -9,8 +9,8 @@ const router = express.Router();
 
 router.post('/api/users/signup',
     [
-        body('email').isEmail().withMessage('Email must be valid'),
-        body('password').trim().isLength({ min: 8, max: 20 }).withMessage('Password must be between 8 and 20 characters')
+        body('email').isEmail().withMessage('ERROR_API_AUTH_INVALID_EMAIL'),
+        body('password').trim().isLength({ min: 8, max: 20 }).withMessage('ERROR_API_AUTH_WEAK_PASSWORD')
     ],
     validateRequest,
     async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ router.post('/api/users/signup',
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            throw new BadRequestError('Email already in use');
+            throw new BadRequestError('AUTH_EMAIL_ALREADY_IN_USE');
         }
 
         const user = User.createUser({ email, password });
